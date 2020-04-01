@@ -46,23 +46,24 @@ class CircleSpawnController: UIViewController {
     }
     
     @objc func handlePan(sender: UIPanGestureRecognizer) {
-        if sender.state == .began {
-            UIView.animate(withDuration: 0.3, animations: {
-                sender.view?.alpha = 0.5
-                sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-            })
-            view.bringSubviewToFront(sender.view!) // tak jak niżej
-        } else if sender.state == .changed {
-            let translation = sender.translation(in: view)
-            if sender.view != view {
-                sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
-                sender.setTranslation(.zero, in: view)
+        if sender.view != view { //patrzymy czy nie nacisnelismy tła
+            
+            if sender.state == .began { // ma być animacja na przytrzymaniu kółka a nie zaczęciu przesuwania, więc pewnie gdzie indziej będzie trzeba to dać
+                UIView.animate(withDuration: 0.3, animations: {
+                    sender.view?.alpha = 0.5
+                    sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                })
+                view.bringSubviewToFront(sender.view!) // tak jak niżej
+            } else if sender.state == .changed {
+                let translation = sender.translation(in: view)
+                    sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
+                    sender.setTranslation(.zero, in: view)
+            } else if sender.state == .ended || sender.state == .cancelled {
+                UIView.animate(withDuration: 0.3, animations: {
+                    sender.view?.alpha = 1
+                    sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
+                })
             }
-        } else if sender.state == .ended || sender.state == .cancelled {
-            UIView.animate(withDuration: 0.3, animations: {
-                sender.view?.alpha = 1
-                sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
-            })
         }
     }
 
