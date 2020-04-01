@@ -12,23 +12,60 @@ class CircleSpawnController: UIViewController {
     override func viewDidLoad() {
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(sender:)))
         doubleTap.numberOfTapsRequired = 2
-        
         view.addGestureRecognizer(doubleTap)
+        
+     //   let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
+      //  tripleTap.numberOfTapsRequired = 3
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
+        view.addGestureRecognizer(pan)
     }
     
     @objc func handleDoubleTap(sender: UITapGestureRecognizer) {
         let location = sender.location(in: view)
-        print("double tap")
         let newCircle = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)))
         newCircle.center = location
         newCircle.layer.cornerRadius = 50
         newCircle.backgroundColor = UIColor.randomBrightColor()
         newCircle.alpha = 0
+        newCircle.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        newCircle.isUserInteractionEnabled = true
         view.addSubview(newCircle)
+        
         UIView.animate(withDuration: 0.3, animations: {
             newCircle.alpha = 1
+            newCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
+        newCircle.addGestureRecognizer(pan)
     }
+    
+    @objc func handleTripleTap(sender: UITapGestureRecognizer) {
+        
+    }
+    
+    @objc func handlePan(sender: UIPanGestureRecognizer) {
+        if sender.state == .began {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 0.5
+                sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            })
+            view.bringSubviewToFront(sender.view!) // tak jak niżej
+        } else if sender.state == .changed {
+            let translation = sender.translation(in: view)
+            if sender.view != view {
+                sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
+                sender.setTranslation(.zero, in: view)
+            }
+        } else if sender.state == .ended || sender.state == .cancelled {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 1
+                sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        }
+    }
+
 }
 
 extension CGFloat {
