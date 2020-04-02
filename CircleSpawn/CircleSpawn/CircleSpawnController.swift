@@ -14,11 +14,14 @@ class CircleSpawnController: UIViewController {
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
         
-     //   let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
-      //  tripleTap.numberOfTapsRequired = 3
+        let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
+        tripleTap.numberOfTapsRequired = 3
+        view.addGestureRecognizer(tripleTap)
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
         view.addGestureRecognizer(pan)
+        
+        doubleTap.require(toFail: tripleTap)
     }
     
     @objc func handleDoubleTap(sender: UITapGestureRecognizer) {
@@ -42,7 +45,7 @@ class CircleSpawnController: UIViewController {
     }
     
     @objc func handleTripleTap(sender: UITapGestureRecognizer) {
-        
+        print("tripleTap aktywowany") //wypisuje i nie tworzy kropki
     }
     
     @objc func handlePan(sender: UIPanGestureRecognizer) {
