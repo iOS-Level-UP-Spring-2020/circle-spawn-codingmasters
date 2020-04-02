@@ -1,6 +1,6 @@
 import UIKit
 
-class CircleSpawnController: UIViewController {
+class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
 
 	// TODO: Assignment 1
 
@@ -17,9 +17,6 @@ class CircleSpawnController: UIViewController {
         let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
         tripleTap.numberOfTapsRequired = 3
         view.addGestureRecognizer(tripleTap)
-        
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
-        view.addGestureRecognizer(pan)
         
         doubleTap.require(toFail: tripleTap)
     }
@@ -39,37 +36,64 @@ class CircleSpawnController: UIViewController {
             newCircle.alpha = 1
             newCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
+        let press = UILongPressGestureRecognizer(target: self, action: #selector(handlePress(sender:)))
+        press.minimumPressDuration = 0.15
+        press.delegate = self
+        newCircle.addGestureRecognizer(press)
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
+        pan.delegate = self
         newCircle.addGestureRecognizer(pan)
     }
     
     @objc func handleTripleTap(sender: UITapGestureRecognizer) {
-        print("tripleTap aktywowany") //wypisuje i nie tworzy kropki
+        UIView.animate(withDuration: 0.3, animations: {
+            sender.view?.alpha = 0
+            sender.view?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        }, completion: {_ in
+            sender.view?.removeFromSuperview()
+        })
+
     }
     
     @objc func handlePan(sender: UIPanGestureRecognizer) {
-        if sender.view != view { //patrzymy czy nie nacisnelismy tła
-            
-            if sender.state == .began { // ma być animacja na przytrzymaniu kółka a nie zaczęciu przesuwania, więc pewnie gdzie indziej będzie trzeba to dać
-                UIView.animate(withDuration: 0.3, animations: {
-                    sender.view?.alpha = 0.5
-                    sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-                })
-                view.bringSubviewToFront(sender.view!) // tak jak niżej
-            } else if sender.state == .changed {
-                let translation = sender.translation(in: view)
-                    sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
-                    sender.setTranslation(.zero, in: view)
-            } else if sender.state == .ended || sender.state == .cancelled {
-                UIView.animate(withDuration: 0.3, animations: {
-                    sender.view?.alpha = 1
-                    sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
-                })
-            }
+
+        if sender.state == .began {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 0.5
+                sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            })
+            view.bringSubviewToFront(sender.view!) // tak jak niżej
+        } else if sender.state == .changed {
+            let translation = sender.translation(in: view)
+                sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
+                sender.setTranslation(.zero, in: view)
+        } else if sender.state == .ended || sender.state == .cancelled {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 1
+                sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
         }
     }
-
+    
+    @objc func handlePress(sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 0.5
+                sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            })
+            view.bringSubviewToFront(sender.view!)
+        } else if sender.state == .ended || sender.state == .cancelled {
+            UIView.animate(withDuration: 0.3, animations: {
+                sender.view?.alpha = 1
+                sender.view?.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        }
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 extension CGFloat {
