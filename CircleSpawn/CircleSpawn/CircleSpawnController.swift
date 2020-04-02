@@ -12,13 +12,9 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(sender:)))
         doubleTap.numberOfTapsRequired = 2
+        doubleTap.name = "double"
+        doubleTap.delegate = self
         view.addGestureRecognizer(doubleTap)
-        
-        let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
-        tripleTap.numberOfTapsRequired = 3
-        view.addGestureRecognizer(tripleTap)
-        
-        doubleTap.require(toFail: tripleTap)
     }
     
     @objc func handleDoubleTap(sender: UITapGestureRecognizer) {
@@ -36,6 +32,12 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
             newCircle.alpha = 1
             newCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
+        let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
+        tripleTap.numberOfTapsRequired = 3
+        tripleTap.name = "triple"
+        tripleTap.delegate = self
+        newCircle.addGestureRecognizer(tripleTap)
+        
         let press = UILongPressGestureRecognizer(target: self, action: #selector(handlePress(sender:)))
         press.minimumPressDuration = 0.15
         press.delegate = self
@@ -93,6 +95,14 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+             shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer.name == "double" && otherGestureRecognizer.name == "triple" {
+          return true
+       }
+       return false
     }
 }
 
