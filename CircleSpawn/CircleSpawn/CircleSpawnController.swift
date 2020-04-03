@@ -2,8 +2,6 @@ import UIKit
 
 class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
 
-	// TODO: Assignment 1
-
 	override func loadView() {
 		view = UIView()
 		view.backgroundColor = .white
@@ -32,6 +30,7 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
             newCircle.alpha = 1
             newCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
+        
         let tripleTap = UITapGestureRecognizer(target: self, action: #selector(handleTripleTap(sender:)))
         tripleTap.numberOfTapsRequired = 3
         tripleTap.name = "triple"
@@ -59,16 +58,18 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func handlePan(sender: UIPanGestureRecognizer) {
-
+        guard sender.view != nil else {
+            return
+        }
         if sender.state == .began {
             UIView.animate(withDuration: 0.3, animations: {
                 sender.view?.alpha = 0.5
                 sender.view?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
             })
-            view.bringSubviewToFront(sender.view!) // tak jak niżej
+            view.bringSubviewToFront(sender.view!)
         } else if sender.state == .changed {
             let translation = sender.translation(in: view)
-                sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)//te wykrzykniki są tymczasowe
+            sender.view!.center = CGPoint(x: sender.view!.center.x + translation.x, y: sender.view!.center.y + translation.y)
                 sender.setTranslation(.zero, in: view)
         } else if sender.state == .ended || sender.state == .cancelled {
             UIView.animate(withDuration: 0.3, animations: {
