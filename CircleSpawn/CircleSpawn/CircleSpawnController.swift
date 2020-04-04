@@ -22,11 +22,11 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
         newCircle.layer.cornerRadius = 50
         newCircle.backgroundColor = UIColor.randomBrightColor()
         newCircle.alpha = 0
-        newCircle.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        newCircle.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
         newCircle.isUserInteractionEnabled = true
         view.addSubview(newCircle)
         
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.15, animations: {
             newCircle.alpha = 1
             newCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
         })
@@ -48,9 +48,9 @@ class CircleSpawnController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func handleTripleTap(sender: UITapGestureRecognizer) {
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.2, animations: {
             sender.view?.alpha = 0
-            sender.view?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            sender.view?.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
         }, completion: {_ in
             sender.view?.removeFromSuperview()
         })
